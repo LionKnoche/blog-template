@@ -1,23 +1,24 @@
-# Use a Node.js base image for building
-FROM node:18-alpine as builder
+# --- Build Stage ---
+FROM node:18-alpine AS builder-stage
 
 WORKDIR /app
 
 COPY package*.json ./
+COPY pnpm-lock.yaml ./
 
-RUN npm install # or pnpm install or yarn install
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile # Saubere Installation mit Lockfile
 
 COPY . .
 
-# Build the Astro site
-RUN npm run build  # or pnpm build or yarn build
+RUN pnpm build # Astro Build Prozess ausführen
 
-# Use a smaller image to serve the static files (Nginx is common)
-FROM nginx:alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+# --- Production Stage ---
+FROM nginx:stable-alpine AS production-stage
 
-# Expose port 80 (default HTTP port)
+COPY --from=builder-stage /app/dist /usr/share/nginx/html
+
 EXPOSE 80
 
-# Nginx serves the static files by default
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
