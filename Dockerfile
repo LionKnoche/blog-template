@@ -1,20 +1,23 @@
-# Use the official Node.js image.
-FROM node:16-alpine
+# Use a Node.js base image for building
+FROM node:18-alpine as builder
 
-# Set the working directory.
 WORKDIR /app
 
-# Copy application dependency manifests to the container image.
 COPY package*.json ./
 
-# Install dependencies.
-RUN npm install --only=production
+RUN npm install # or pnpm install or yarn install
 
-# Copy the rest of the application code.
 COPY . .
 
-# Define the port the application will listen on.
-ENV PORT=8080
+# Build the Astro site
+RUN npm run build  # or pnpm build or yarn build
 
-# Start the application.
-CMD ["node", "index.js"]
+# Use a smaller image to serve the static files (Nginx is common)
+FROM nginx:alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Expose port 80 (default HTTP port)
+EXPOSE 80
+
+# Nginx serves the static files by default
