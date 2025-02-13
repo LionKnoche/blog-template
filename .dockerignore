@@ -1,0 +1,39 @@
+# 1) Node- und Build-Artefakte
+node_modules
+dist
+build
+.astro
+
+# 2) Versionskontrolle & CI
+.git
+.github
+.husky
+
+# 3) Editor- und Systemdateien
+.vscode
+.idea
+*.suo
+*.sw?
+Thumbs.db
+.DS_Store
+
+# 4) Linting- und Formatting-Konfiguration (falls du NICHT im Container lintest)
+.eslintignore
+.eslintrc.*
+.prettierrc
+.prettierignore
+
+# 5) Docker-Spezifisches (falls nicht im Image benötigt)
+Dockerfile
+docker-compose.yml
+
+# 6) Sensible oder lokale Umgebungsdateien
+.env
+.env.*
+.env.local
+
+# 7) Logs, Cache, Coverage, etc.
+npm-debug.log
+yarn-error.log
+pnpm-error.log
+coverage
