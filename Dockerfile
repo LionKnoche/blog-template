@@ -10,6 +10,8 @@
     COPY package*.json ./
     COPY pnpm-lock.yaml ./
     
+
+    
     # 3) pnpm installieren und Abhängigkeiten auflösen
     RUN npm install -g pnpm@10.3.0
     RUN pnpm install --frozen-lockfile
@@ -22,9 +24,9 @@
     
     # --- Production Stage ---
     FROM nginx:stable-alpine AS production-stage
-    
+    COPY nginx.conf /etc/nginx/nginx.conf
     COPY --from=builder-stage /app/dist /usr/share/nginx/html
     
-    EXPOSE 80
+    EXPOSE 8080
     ENTRYPOINT ["nginx", "-g", "daemon off;"]
     
