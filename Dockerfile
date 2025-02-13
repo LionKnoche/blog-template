@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY pnpm-lock.yaml ./
 
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10.3.0
 RUN pnpm install --frozen-lockfile # Saubere Installation mit Lockfile
 
 COPY . .
