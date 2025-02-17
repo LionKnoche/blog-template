@@ -1,26 +1,11 @@
 steps:
-  # 1. Image mit eindeutigem Tag bauen (SHA ist immutable)
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA', '.']
-
-  # 2. Image pushen (nur der SHA-Tag ist erforderlich)
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA', '.'] # Korrekter Image Name 'lion-astro-app', aber noch Commit SHA Tag
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA']
+    args: ['tag', 'gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA', 'gcr.io/$PROJECT_ID/lion-astro-app:latest'] # Füge latest Tag hinzu
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/lion-astro-app:latest'] # Pushe mit latest Tag
 
-  # 3. DEPLOY TO CLOUD RUN mit dem neuen Image-Tag (wichtig!)
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: bash
-    args:
-      - '-c'
-      - |
-        gcloud run deploy lion-astro-app \
-          --image=gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA \
-          --region=europe-west1 \
-          --platform=managed \
-          --quiet
-
-# 4. Nur das SHA-Image registrieren (latest ist redundant)
-images: ['gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA']
-
+images: ['gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA', 'gcr.io/$PROJECT_ID/lion-astro-app:latest'] # Beides als Images angeben
 options:
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
