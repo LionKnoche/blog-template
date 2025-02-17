@@ -1,34 +1,28 @@
 steps:
-  # 1) Docker-Image bauen (verwendet Dockerfile im aktuellen Verzeichnis)
+  # 1) Docker-Image bauen
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA', '.']
-    # Optional: Nur Cloud Logging für diesen Schritt
-    logging: CLOUD_LOGGING_ONLY
 
-  # 2) Docker-Image zusätzlich mit "latest" taggen
+  # 2) Docker-Image taggen
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'tag',
       'gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA',
       'gcr.io/$PROJECT_ID/lion-astro-app:latest'
     ]
-    logging: CLOUD_LOGGING_ONLY
 
-  # 3) Docker-Image (SHA-Tag) pushen
+  # 3) Docker-Image pushen (SHA)
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA']
-    logging: CLOUD_LOGGING_ONLY
 
-  # 4) Docker-Image (latest-Tag) pushen
+  # 4) Docker-Image pushen (latest)
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/lion-astro-app:latest']
-    logging: CLOUD_LOGGING_ONLY
 
-# Registriere beide Images als Build-Output
 images:
   - 'gcr.io/$PROJECT_ID/lion-astro-app:$SHORT_SHA'
   - 'gcr.io/$PROJECT_ID/lion-astro-app:latest'
 
 options:
-  # Verwende nur Cloud Logging (keinen eigenen Logs-Bucket)
+  # Nur Cloud Logging (kein GCS-Bucket)
   logging: CLOUD_LOGGING_ONLY
